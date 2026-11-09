@@ -48,3 +48,4 @@ def publish_post_direct(
     except Exception as e:
         logger.exception("Erreur inattendue lors de la publication directe")
         return JSONResponse({"ok": False, "error": f"Erreur serveur: {str(e)}"}, status_code=500)
+

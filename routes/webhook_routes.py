@@ -92,3 +92,4 @@ async def generic_webhook(platform: str, request: Request):
         (platform, "incoming", json.dumps(body))
     )
     return {"status": "received"}
+

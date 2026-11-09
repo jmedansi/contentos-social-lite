@@ -194,3 +194,4 @@ def send_social_dm(account: Dict[str, Any], recipient_id: str, message: str) -> 
         if resp.status_code >= 400:
             raise SocialPublishError(f"Erreur envoi DM: {data.get('error', {}).get('message')}")
         return {"ok": True, "message_id": str(data.get("message_id") or data.get("id"))}
+

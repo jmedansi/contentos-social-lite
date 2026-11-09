@@ -50,15 +50,19 @@ def index_page(request: Request):
     webhook_logs = execute_query("SELECT * FROM webhook_logs ORDER BY created_at DESC LIMIT 20")
     app_url = os.getenv("APP_URL", str(request.base_url).rstrip("/"))
 
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "accounts": accounts,
-        "publications": publications,
-        "messages": messages,
-        "webhook_logs": webhook_logs,
-        "app_url": app_url
-    })
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context={
+            "accounts": accounts,
+            "publications": publications,
+            "messages": messages,
+            "webhook_logs": webhook_logs,
+            "app_url": app_url
+        }
+    )
 
 @app.get("/health")
 def health_check():
     return {"status": "ok", "app": "ContentOS-Social-Lite", "ai_enabled": False, "scheduling_enabled": False}
+

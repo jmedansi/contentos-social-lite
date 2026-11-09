@@ -43,3 +43,4 @@ Dans votre compte [Meta for Developers](https://developers.facebook.com/) :
 2. Renseignez l'URL de rappel : `https://votre-projet.vercel.app/webhooks/meta`
 3. Renseignez le Token de vérification : `contentos_secret_token_123` (ou celui défini dans `META_VERIFY_TOKEN`).
 4. Abonnez-vous aux champs : `feed`, `messages`, `messaging_postbacks`, `comments`.
+

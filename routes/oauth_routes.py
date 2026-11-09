@@ -162,3 +162,4 @@ def add_manual_account(
         (platform.lower(), account_name, page_id, access_token, json.dumps(settings))
     )
     return RedirectResponse(url="/?account_added=1", status_code=303)
+

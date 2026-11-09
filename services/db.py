@@ -23,7 +23,16 @@ def get_connection():
 def is_postgres() -> bool:
     return DATABASE_URL.startswith("postgres://") or DATABASE_URL.startswith("postgresql://")
 
+_DB_INITIALIZED = False
+
+def ensure_initialized():
+    global _DB_INITIALIZED
+    if not _DB_INITIALIZED:
+        init_db()
+        _DB_INITIALIZED = True
+
 def execute_query(query: str, params: tuple = ()) -> List[Dict[str, Any]]:
+    ensure_initialized()
     conn = get_connection()
     try:
         if is_postgres():
@@ -49,6 +58,7 @@ def execute_query(query: str, params: tuple = ()) -> List[Dict[str, Any]]:
         conn.close()
 
 def execute_insert(query: str, params: tuple = ()) -> int:
+    ensure_initialized()
     conn = get_connection()
     try:
         if is_postgres():
@@ -189,3 +199,4 @@ def init_db():
             conn.commit()
     finally:
         conn.close()
+
