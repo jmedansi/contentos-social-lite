@@ -1,0 +1,14 @@
+# Environnement
+.env
+.env.local
+*.log
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.DS_Store
+
+# Fichiers temporaires ou SQLite local
+*.db
+*.sqlite3
+uploads/

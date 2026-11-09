@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ContentOS Social Lite - Banc de Test Réseaux</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --bs-primary: #0284c7;
+            --bs-primary-rgb: 2, 132, 199;
+        }
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .badge-lite {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .card {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .nav-pills .nav-link {
+            color: #64748b;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 10px 18px;
+        }
+        .nav-pills .nav-link.active {
+            background-color: #0284c7;
+            color: white;
+        }
+        .chat-bubble-in {
+            background-color: #f1f5f9;
+            border-radius: 14px 14px 14px 2px;
+            padding: 10px 14px;
+            max-width: 80%;
+        }
+        .chat-bubble-out {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            border-radius: 14px 14px 2px 14px;
+            padding: 10px 14px;
+            max-width: 80%;
+            margin-left: auto;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top py-3">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+            <i class="bi bi-share-fill text-primary"></i>
+            <span>ContentOS</span>
+            <span class="badge-lite">SOCIAL TESTER LITE</span>
+        </a>
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-muted small"><i class="bi bi-shield-check text-success"></i> Aucune IA • Publication Directe</span>
+            <span class="badge bg-secondary-subtle text-secondary border">Vercel Edition</span>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-4">
+    <!-- Onglets Principaux -->
+    <ul class="nav nav-pills mb-4 gap-2" id="mainTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active d-flex align-items-center gap-2" id="tab-publish-btn" data-bs-toggle="pill" data-bs-target="#tab-publish">
+                <i class="bi bi-send"></i> Créer & Publier
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link d-flex align-items-center gap-2" id="tab-inbox-btn" data-bs-toggle="pill" data-bs-target="#tab-inbox">
+                <i class="bi bi-chat-left-dots"></i> Boîte de Réception & DM
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link d-flex align-items-center gap-2" id="tab-accounts-btn" data-bs-toggle="pill" data-bs-target="#tab-accounts">
+                <i class="bi bi-link-45deg"></i> Comptes Connectés (OAuth)
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link d-flex align-items-center gap-2" id="tab-webhooks-btn" data-bs-toggle="pill" data-bs-target="#tab-webhooks">
+                <i class="bi bi-broadcast"></i> Logs Webhooks
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="mainTabContent">
+        
+        <!-- ONGLET 1 : PUBLICATION DIRECTE -->
+        <div class="tab-pane fade show active" id="tab-publish">
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="card p-4 mb-4">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-pencil-square text-primary"></i> Nouvelle Publication Directe</h5>
+                        <form action="/publish/direct" method="POST">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Compte de publication</label>
+                                <select name="account_id" class="form-select" required>
+                                    <option value="" disabled selected>-- Sélectionnez un compte connecté --</option>
+                                    {% for acc in accounts %}
+                                        <option value="{{ acc.id }}">[{{ acc.platform|upper }}] {{ acc.account_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Message / Contenu</label>
+                                <textarea name="message" class="form-control" rows="5" placeholder="Écrivez le message à publier immédiatement..." required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">URL de Média public (Image ou Vidéo)</label>
+                                <input type="url" name="media_url" class="form-control" placeholder="https://example.com/image.jpg (Obligatoire pour Instagram)">
+                                <div class="form-text">Pour Instagram ou publication avec image Facebook. Doit être accessible publiquement par l'API Meta.</div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <span class="badge bg-warning-subtle text-warning border px-2 py-1">
+                                    <i class="bi bi-lightning-fill"></i> Envoi direct sans délai
+                                </span>
+                                <button type="submit" class="btn btn-primary px-4 fw-semibold">
+                                    <i class="bi bi-send-fill me-1"></i> Publier maintenant
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="card p-4">
+                        <h6 class="fw-bold mb-3"><i class="bi bi-clock-history"></i> Dernières publications directes</h6>
+                        {% if publications %}
+                            <div class="list-group list-group-flush">
+                            {% for pub in publications %}
+                                <div class="list-group-item px-0 py-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="badge bg-dark">{{ pub.platform|upper }}</span>
+                                        <small class="text-muted">{{ pub.created_at }}</small>
+                                    </div>
+                                    <p class="mb-1 text-truncate">{{ pub.message }}</p>
+                                    {% if pub.status == 'published' %}
+                                        <span class="badge bg-success-subtle text-success"><i class="bi bi-check-circle"></i> Publié (ID: {{ pub.remote_post_id }})</span>
+                                    {% else %}
+                                        <span class="badge bg-danger-subtle text-danger"><i class="bi bi-x-circle"></i> Échoué : {{ pub.error_detail }}</span>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted small">Aucune publication récente.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ONGLET 2 : INBOX & DM -->
+        <div class="tab-pane fade" id="tab-inbox">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card p-4 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold mb-0"><i class="bi bi-chat-quote text-primary"></i> Boîte de Réception (DM & Commentaires)</h5>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="location.reload()"><i class="bi bi-arrow-clockwise"></i> Rafraîchir</button>
+                        </div>
+                        
+                        {% if messages %}
+                            <div class="vstack gap-3">
+                            {% for msg in messages %}
+                                <div class="card border p-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <span class="badge bg-primary-subtle text-primary">{{ msg.platform|upper }}</span>
+                                            <span class="badge bg-light text-dark border ms-1">{{ msg.message_type|upper }}</span>
+                                            <strong>{{ msg.sender_name or msg.sender_id or "Auteur inconnu" }}</strong>
+                                        </div>
+                                        <small class="text-muted">{{ msg.created_at }}</small>
+                                    </div>
+
+                                    <div class="{{ 'chat-bubble-out' if msg.is_from_me else 'chat-bubble-in' }} mb-2">
+                                        {{ msg.content }}
+                                    </div>
+
+                                    {% if not msg.is_from_me %}
+                                        <!-- Formulaire de réponse directe -->
+                                        {% if msg.message_type == 'comment' %}
+                                            <form action="/inbox/reply/comment" method="POST" class="mt-2 d-flex gap-2">
+                                                <input type="hidden" name="message_id" value="{{ msg.id }}">
+                                                <input type="text" name="reply_text" class="form-control form-control-sm" placeholder="Répondre publiquement à ce commentaire..." required>
+                                                <button type="submit" class="btn btn-sm btn-outline-primary text-nowrap"><i class="bi bi-reply"></i> Répondre</button>
+                                            </form>
+                                        {% else %}
+                                            <form action="/inbox/reply/dm" method="POST" class="mt-2 d-flex gap-2">
+                                                <input type="hidden" name="recipient_id" value="{{ msg.sender_id }}">
+                                                <input type="hidden" name="platform" value="{{ msg.platform }}">
+                                                <input type="text" name="reply_text" class="form-control form-control-sm" placeholder="Répondre en Message Privé (DM)..." required>
+                                                <button type="submit" class="btn btn-sm btn-outline-primary text-nowrap"><i class="bi bi-send"></i> Répondre DM</button>
+                                            </form>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                Aucun message ou commentaire pour le moment.<br>
+                                Les événements reçus via Webhook s'afficheront ici automatiquement.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card p-4">
+                        <h6 class="fw-bold mb-3"><i class="bi bi-send-plus"></i> Nouveau DM manuel</h6>
+                        <form action="/inbox/reply/dm" method="POST">
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Plateforme</label>
+                                <select name="platform" class="form-select form-select-sm" required>
+                                    <option value="facebook">Facebook Messenger</option>
+                                    <option value="instagram">Instagram Direct</option>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Identifiant Destinataire (PSID / IGSID)</label>
+                                <input type="text" name="recipient_id" class="form-control form-control-sm" placeholder="Ex: 1234567890" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Message</label>
+                                <textarea name="reply_text" rows="3" class="form-control form-control-sm" placeholder="Texte du message privé..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-primary w-100">Envoyer le DM</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ONGLET 3 : COMPTES OAUTH -->
+        <div class="tab-pane fade" id="tab-accounts">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card p-4 mb-4">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-key text-primary"></i> Connexions OAuth Officielles</h5>
+                        <p class="text-muted small">Connectez vos comptes de test via le flux OAuth officiel requis par Meta et LinkedIn.</p>
+                        <div class="vstack gap-2">
+                            <a href="/oauth/meta/login" class="btn btn-outline-primary d-flex align-items-center justify-content-between p-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-facebook fs-4"></i>
+                                    <i class="bi bi-instagram fs-4"></i>
+                                    <span class="fw-semibold">Connecter Facebook & Instagram</span>
+                                </div>
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                            <a href="/oauth/linkedin/login" class="btn btn-outline-primary d-flex align-items-center justify-content-between p-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-linkedin fs-4"></i>
+                                    <span class="fw-semibold">Connecter LinkedIn</span>
+                                </div>
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card p-4">
+                        <h6 class="fw-bold mb-3"><i class="bi bi-input-cursor-text"></i> Injection Manuelle de Token (Option Développeur)</h6>
+                        <form action="/oauth/manual/add" method="POST">
+                            <div class="mb-2">
+                                <label class="form-label small">Plateforme</label>
+                                <select name="platform" class="form-select form-select-sm" required>
+                                    <option value="facebook">Facebook</option>
+                                    <option value="instagram">Instagram</option>
+                                    <option value="linkedin">LinkedIn</option>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small">Nom du Compte</label>
+                                <input type="text" name="account_name" class="form-control form-control-sm" placeholder="Ex: Page Test Meta" required>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small">Page ID / Author URN</label>
+                                <input type="text" name="page_id" class="form-control form-control-sm" placeholder="Ex: 10482910482910">
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small">Instagram Business ID (si Instagram)</label>
+                                <input type="text" name="ig_user_id" class="form-control form-control-sm" placeholder="Ex: 17841400...">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small">Access Token</label>
+                                <input type="text" name="access_token" class="form-control form-control-sm" placeholder="EAA..." required>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-dark w-100">Enregistrer le compte</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card p-4">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-people"></i> Comptes actifs ({{ accounts|length }})</h5>
+                        <div class="list-group list-group-flush">
+                            {% for acc in accounts %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                                    <div>
+                                        <span class="badge bg-dark">{{ acc.platform|upper }}</span>
+                                        <strong class="ms-1">{{ acc.account_name }}</strong>
+                                        <div class="text-muted small">ID Page: {{ acc.page_id or "Non spécifié" }}</div>
+                                    </div>
+                                    <span class="badge bg-success-subtle text-success">Actif</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ONGLET 4 : LOGS WEBHOOKS -->
+        <div class="tab-pane fade" id="tab-webhooks">
+            <div class="card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-broadcast text-primary"></i> Événements Webhooks Reçus</h5>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="location.reload()"><i class="bi bi-arrow-clockwise"></i> Rafraîchir</button>
+                </div>
+                <div class="alert alert-info py-2 small">
+                    <strong>URL Webhook Meta :</strong> <code>{{ app_url }}/webhooks/meta</code> | 
+                    <strong>Verify Token :</strong> <code>contentos_secret_token_123</code>
+                </div>
+
+                {% if webhook_logs %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Plateforme</th>
+                                    <th>Type</th>
+                                    <th>Payload JSON</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in webhook_logs %}
+                                <tr>
+                                    <td class="text-nowrap small text-muted">{{ log.created_at }}</td>
+                                    <td><span class="badge bg-secondary">{{ log.platform|upper }}</span></td>
+                                    <td>{{ log.event_type }}</td>
+                                    <td><pre class="mb-0 small bg-light p-2 rounded" style="max-height: 80px; overflow-y: auto;">{{ log.payload }}</pre></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center py-4">Aucun événement webhook reçu pour l'instant.</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Activation de l'onglet selon le hash URL (#inbox, etc.)
+    if (window.location.hash) {
+        const triggerEl = document.querySelector(`button[data-bs-target="${window.location.hash}"]`);
+        if (triggerEl) {
+            bootstrap.Tab.getOrCreateInstance(triggerEl).show();
+        }
+    }
+</script>
+</body>
+</html>
